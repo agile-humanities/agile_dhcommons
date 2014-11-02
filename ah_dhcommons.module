@@ -1,0 +1,196 @@
+<?php
+
+/**
+ * @file
+ * Module file for ah_dhcommons.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function ah_dhcommons_menu() {
+  return array(
+    'admin/config/services/dhcommons' => array(
+      'title' => 'DH Commons Tools Config',
+      'description' => 'Configure DHCommons integration.',
+      'page callback' => 'drupal_get_form',
+      'access arguments' => array('administer site configuration'),
+      'page arguments' => array('ah_dhcommons_admin'),
+      'file' => 'includes/ah_dhcommons_admin.form.inc',
+      'type' => MENU_NORMAL_ITEM,
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ah_dhcommons_block_info() {
+  $blocks['dirt_tools'] = array(
+    'info' => t('Imported Tool information from DiRT'),
+    'cache' => DRUPAL_CACHE_PER_ROLE,
+  );
+  $blocks['dirt_tool'] = array(
+    'info' => t('Single DiRT tool'),
+    'status' => TRUE,
+    'region' => 'sidebar_first',
+    'visibility' => BLOCK_VISIBILITY_LISTED,
+    'pages' => 'taxonomy/term/*',
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ah_dhcommons_block_view($delta = '') {
+  module_load_include('inc', 'ah_dhcommons', 'includes/utilities');
+  switch ($delta) {
+    case 'dirt_tools':
+      $block['subject'] = t('Tools used');
+      $block['content'] = ah_dhcommons_dirt_fetch();
+      break;
+
+    case 'dirt_tool':
+      $block['subject'] = t('DiRT Tool');
+      $block['content'] = ah_dhcommons_dirt_get_term();
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Defines the theming capabilities provided by this module.
+ */
+function ah_dhcommons_theme() {
+  return array(
+    'dhcommons_dirt' => array(
+      'file' => 'theme/theme.inc',
+      'template' => 'theme/dhcommons-dirt',
+      'variables' => array('object' => NULL),
+    ),
+  );
+
+}
+
+/**
+ * Implementation of hook_services_resources().
+ */
+function ah_dhcommons_services_resources() {
+  $api = array(
+    'project' => array(
+      'operations' => array(
+        'retrieve' => array(
+          'help' => 'Retrieves posted projects',
+          'callback' => '_ah_dhcommons_project_retrieve',
+          'access callback' => 'user_access',
+          'access arguments' => array('access content'),
+          'access arguments append' => FALSE,
+          'args' => array(
+            array(
+              'name' => 'fn',
+              'type' => 'string',
+              'description' => 'Function to perform',
+              'source' => array('path' => '0'),
+              'optional' => TRUE,
+              'default' => '0',
+            ),
+            array(
+              'name' => 'nprojects',
+              'type' => 'int',
+              'description' => 'Number of latest projects to get',
+              'source' => array('param' => 'nprojects'),
+              'optional' => TRUE,
+              'default' => '0',
+            ),
+            array(
+              'name' => 'since',
+              'type' => 'int',
+              'description' => 'Posts from the last number of days',
+              'source' => array('param' => 'since'),
+              'optional' => TRUE,
+              'default' => '0',
+            ),
+          ),
+        ),
+      ),
+      'actions' => array(
+        'fetch' => array(
+          'help' => 'Retrieves posted projects',
+          'callback' => '_ah_dhcommons_project_retrieve',
+          'access callback' => 'user_access',
+          'access arguments' => array('access content'),
+          'access arguments append' => FALSE,
+          'args' => array(
+            array(
+              'name' => 'fn',
+              'type' => 'string',
+              'description' => 'Function to perform',
+              'source' => array('path' => '0'),
+              'optional' => TRUE,
+              'default' => '0',
+            ),
+            array(
+              'name' => 'nprojects',
+              'type' => 'int',
+              'description' => 'Number of latest projects to get',
+              'source' => array('param' => 'nprojects'),
+              'optional' => TRUE,
+              'default' => '0',
+            ),
+            array(
+              'name' => 'since',
+              'type' => 'int',
+              'description' => 'Posts from the last number of days',
+              'source' => array('param' => 'since'),
+              'optional' => TRUE,
+              'default' => '0',
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  return $api;
+}
+
+/**
+ * Callback function for project retrieve
+ */
+function _ah_dhcommons_project_retrieve($fn, $nprojects, $timestamp) {
+  // Sanitize inputs.
+  $nprojects = intval($nprojects);
+  $timestamp = intval($timestamp);
+  return
+      ah_dhcommons_find_project($nprojects, $timestamp);
+}
+
+/**
+ * Gets project posts
+ */
+function ah_dhcommons_find_project($nprojects, $toolname) {
+  $nprojects = isset($_POST['nprojects']) ? $_POST['nprojects'] : NULL;
+  $tool_name = isset($_POST['tool_name']) ? $_POST['tool_name'] : NULL;
+  $return_count = variable_get('ah_dhcommons_max_tool_count', '5');
+  $query = db_select('node', 'n');
+  $query->join('node_revision', 'v', '(n.nid = v.nid) AND (n.vid = v.vid)');
+  $query->join('field_revision_field_tools_used', 'tu', '(tu.revision_id = v.nid)');
+  $query->condition('n.type', 'project', '=');
+  $query->fields('n', array('nid'));
+  $query->fields('v', array('title'));
+  $query->fields('tu', array('field_tools_used_tid'));
+  if (isset($tool_name)) {
+    $terms = taxonomy_get_term_by_name($tool_name, 'tools_used');
+    $term = array_shift($terms);
+    $query->condition('tu.field_tools_used_tid', $term->tid, '=');
+
+  }
+  $query->orderBy('v.timestamp', 'DESC');
+  $query->range(0, $return_count);
+  $projects = $query->execute()->fetchAll();
+
+  return $projects;
+}
