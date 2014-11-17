@@ -19,7 +19,7 @@ function ah_dhcommons_dirt_fetch($nitems = NULL, $tool_name = NULL) {
   $rest_path = variable_get('ah_dhcommons_dirt_rest_path', 'rest');
   $alias = variable_get('ah_dhcommons_dirt_alias', 'tool');
   $url = "$dirt_url/$rest_path/$alias";
-  $api_key = variable_get('ah_dirt_api_key', '');
+  $api_key = variable_get('ah_dhcommons_dirt_api_key', '');
   $post_data = array(
     'api-key' => $api_key,
     'nitems' => $nitems,

@@ -15,7 +15,7 @@ function ah_dhcommons_admin() {
   $form['ah_dhcommons_dirt_api_key'] = array(
     '#type' => 'textfield',
     '#title' => t('API Key'),
-    '#default_value' => variable_get('ah_dirt_api_key', ''),
+    '#default_value' => variable_get('ah_dhcommons_dirt_api_key', ''),
     '#description' => t('API Key to access DiRT'),
   );
   $form['ah_dhcommons_dirt_url'] = array(
