@@ -177,7 +177,7 @@ function ah_dhcommons_find_project($nprojects, $toolname) {
   $return_count = variable_get('ah_dhcommons_max_tool_count', '5');
   $query = db_select('node', 'n');
   $query->join('node_revision', 'v', '(n.nid = v.nid) AND (n.vid = v.vid)');
-  $query->join('field_revision_field_tools_used', 'tu', '(tu.revision_id = v.nid)');
+  $query->join('field_revision_field_tools_used', 'tu', '(tu.revision_id = v.vid)');
   $query->condition('n.type', 'project', '=');
   $query->fields('n', array('nid'));
   $query->fields('v', array('title'));
@@ -186,7 +186,6 @@ function ah_dhcommons_find_project($nprojects, $toolname) {
     $terms = taxonomy_get_term_by_name($tool_name, 'tools_used');
     $term = array_shift($terms);
     $query->condition('tu.field_tools_used_tid', $term->tid, '=');
-
   }
   $query->orderBy('v.timestamp', 'DESC');
   $query->range(0, $return_count);
