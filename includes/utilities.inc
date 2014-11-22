@@ -11,10 +11,10 @@
  *
  * @param string $nitems
  *   number of items to return
- * @param string $tool_name
- *   Name of tool to be returned
+ * @param array $tools
+ *   Name of tools to be returned
  */
-function ah_dhcommons_dirt_fetch($nitems = NULL, $tool_name = NULL) {
+function ah_dhcommons_dirt_fetch($nitems = NULL, $tools = NULL) {
   $dirt_url = variable_get('ah_dhcommons_dirt_url', 'http://test.bamboodirt.gotpantheon.com');
   $rest_path = variable_get('ah_dhcommons_dirt_rest_path', 'rest');
   $alias = variable_get('ah_dhcommons_dirt_alias', 'tool');
@@ -23,7 +23,7 @@ function ah_dhcommons_dirt_fetch($nitems = NULL, $tool_name = NULL) {
   $post_data = array(
     'api-key' => $api_key,
     'nitems' => $nitems,
-    'tool_name' => $tool_name,
+    'tools' => serialize($tools),
   );
   $data = http_build_query($post_data, '', '&');
   $options = array(

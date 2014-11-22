@@ -45,18 +45,35 @@ function ah_dhcommons_block_info() {
  */
 function ah_dhcommons_block_view($delta = '') {
   module_load_include('inc', 'ah_dhcommons', 'includes/utilities');
+  $has_content = FALSE;
   switch ($delta) {
     case 'dirt_tools':
-      $block['subject'] = t('Tools used');
-      $block['content'] = ah_dhcommons_dirt_fetch();
+      $path_parts = explode('/', $_GET['q']);
+      if ($path_parts[0] == 'node' && isset($path_parts[1])) {
+        $nid = end($path_parts);
+        $node = node_load($nid);
+        $tools_used = $node->field_tools_used['und'];
+        $tools = array();
+        foreach ($tools_used as $tool) {
+          $tools[] = $tool['taxonomy_term']->name;
+        }
+        $block['subject'] = t('Tools used');
+        $block['content'] = ah_dhcommons_dirt_fetch(NULL, $tools);
+        $has_content = TRUE;
+      }
+
       break;
 
     case 'dirt_tool':
       $block['subject'] = t('DiRT Tool');
       $block['content'] = ah_dhcommons_dirt_get_term();
+      $has_content = TRUE;
       break;
   }
-  return $block;
+  if ($has_content) {
+    return $block;
+  }
+
 }
 
 /**
@@ -72,7 +89,6 @@ function ah_dhcommons_theme() {
       'variables' => array('object' => NULL),
     ),
   );
-
 }
 
 /**
