@@ -56,5 +56,5 @@ function ah_dhcommons_dirt_get_term() {
     $tid = $path_parts[2];
   }
   $term = taxonomy_term_load($tid);
-  return ah_dhcommons_dirt_fetch(NULL, $term->name);
+  return ah_dhcommons_dirt_fetch(NULL, array($term->name));
 }
