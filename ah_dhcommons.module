@@ -52,14 +52,16 @@ function ah_dhcommons_block_view($delta = '') {
       if ($path_parts[0] == 'node' && isset($path_parts[1])) {
         $nid = end($path_parts);
         $node = node_load($nid);
-        $tools_used = $node->field_tools_used['und'];
-        $tools = array();
-        foreach ($tools_used as $tool) {
-          $tools[] = $tool['taxonomy_term']->name;
+        if (isset($node->field_tools_used['und'])) {
+          $tools_used = $node->field_tools_used['und'];
+          $tools = array();
+          foreach ($tools_used as $tool) {
+            $tools[] = $tool['taxonomy_term']->name;
+          }
+          $block['subject'] = t('Tools used');
+          $block['content'] = ah_dhcommons_dirt_fetch(NULL, $tools);
+          $has_content = TRUE;
         }
-        $block['subject'] = t('Tools used');
-        $block['content'] = ah_dhcommons_dirt_fetch(NULL, $tools);
-        $has_content = TRUE;
       }
 
       break;
@@ -73,7 +75,6 @@ function ah_dhcommons_block_view($delta = '') {
   if ($has_content) {
     return $block;
   }
-
 }
 
 /**
