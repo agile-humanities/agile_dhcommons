@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * @file
+ * Template for links.
+ */
 ?>
 <div>
   <p class ="dirt_title"><?php print $title; ?></p>
