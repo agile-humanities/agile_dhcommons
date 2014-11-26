@@ -27,10 +27,11 @@ function ah_dhcommons_dirt_fetch($nitems = NULL, $tools = NULL) {
   );
   $data = http_build_query($post_data, '', '&');
   $options = array(
-    'headers' => array('Accept' => 'application/json',
+    'headers' => array(
+      'Accept' => 'application/json',
       'Content-Type' => 'application/x-www-form-urlencoded'),
     'method' => 'POST',
-    'data' => $data
+    'data' => $data,
   );
   $response = drupal_http_request($url . '/fetch', $options);
   $objects = json_decode($response->data);
@@ -51,7 +52,7 @@ function ah_dhcommons_dirt_fetch($nitems = NULL, $tools = NULL) {
  *   Tool Name
  */
 function ah_dhcommons_dirt_get_term() {
-  $path_parts = explode('/',$_GET['q']);
+  $path_parts = explode('/', $_GET['q']);
   if ($path_parts[1] == 'term' && isset($path_parts[2])) {
     $tid = $path_parts[2];
   }

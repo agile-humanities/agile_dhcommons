@@ -93,7 +93,7 @@ function ah_dhcommons_theme() {
 }
 
 /**
- * Implementation of hook_services_resources().
+ * Implements hook_services_resources().
  */
 function ah_dhcommons_services_resources() {
   $api = array(
@@ -175,7 +175,7 @@ function ah_dhcommons_services_resources() {
 }
 
 /**
- * Callback function for project retrieve
+ * Callback function for project retrieval.
  */
 function _ah_dhcommons_project_retrieve($fn, $nprojects, $timestamp) {
   // Sanitize inputs.
@@ -186,7 +186,7 @@ function _ah_dhcommons_project_retrieve($fn, $nprojects, $timestamp) {
 }
 
 /**
- * Gets project posts
+ * Gets project posts.
  */
 function ah_dhcommons_find_project($nprojects, $toolname) {
   $nprojects = isset($_POST['nprojects']) ? $_POST['nprojects'] : NULL;
