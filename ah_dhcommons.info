@@ -1,4 +1,4 @@
-name = Agile Humanities DH Common
+name = Agile Humanities DHCommons
 description = Allows RESTful communication with DiRT
 core = 7.x
 package = Agile Humanities

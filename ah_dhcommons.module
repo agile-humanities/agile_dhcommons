@@ -191,6 +191,18 @@ function _ah_dhcommons_project_retrieve($fn, $nprojects, $timestamp) {
 function ah_dhcommons_find_project($nprojects, $toolname) {
   $nprojects = isset($_POST['nprojects']) ? $_POST['nprojects'] : NULL;
   $tool_name = isset($_POST['tool_name']) ? $_POST['tool_name'] : NULL;
+  $taxonomy = isset($_POST['taxonomy']) ? $_POST['taxonomy'] : 'tools_used';
+  $sort = isset($_POST['sort']) ? $_POST['sort'] : 'timestamp';
+  switch ($sort) {
+    case 'timestamp':
+      $orderby = 'v.timestamp';
+      $direction = 'DESC';
+
+      break;
+    case 'title':
+      $orderby = 'v.title';
+      $direction = 'ASC';
+  }
   $return_count = variable_get('ah_dhcommons_max_tool_count', '5');
   $query = db_select('node', 'n');
   $query->join('node_revision', 'v', '(n.nid = v.nid) AND (n.vid = v.vid)');
@@ -200,11 +212,11 @@ function ah_dhcommons_find_project($nprojects, $toolname) {
   $query->fields('v', array('title'));
   $query->fields('tu', array('field_tools_used_tid'));
   if (isset($tool_name)) {
-    $terms = taxonomy_get_term_by_name($tool_name, 'tools_used');
+    $terms = taxonomy_get_term_by_name($tool_name, $taxonomy);
     $term = array_shift($terms);
     $query->condition('tu.field_tools_used_tid', $term->tid, '=');
   }
-  $query->orderBy('v.timestamp', 'DESC');
+  $query->orderBy($orderby, $direction);
   $query->range(0, $return_count);
   $projects = $query->execute()->fetchAll();
 

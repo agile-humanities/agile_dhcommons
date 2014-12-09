@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Utility REST functions.
@@ -34,6 +35,10 @@ function ah_dhcommons_dirt_fetch($nitems = NULL, $tools = NULL) {
     'data' => $data,
   );
   $response = drupal_http_request($url . '/fetch', $options);
+  if (!$response || floor($response->code / 100) != 2) {
+    watchdog('agile_dirt', t('Check REST connectivity'));
+    return;
+  }
   $objects = json_decode($response->data);
   $links = '';
   foreach ($objects as $object) {
