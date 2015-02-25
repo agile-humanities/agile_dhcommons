@@ -1,6 +1,6 @@
 # Agile Humanities DHCommons Module
 
-The Agile DHCommons Module works in conjunction with the Agile DiRT Module to allow meaningful exchange of information between the DHCommons and DiRT websites.
+The Agile DHCommons Module works in conjunction with the Agile DiRT Module to allow meaningful exchange of information between the DHCommons and DiRT websites. Both modules are complementary, with each to be installed on its respective website. Each module publishes and subscribes. Each operates independently and does not require the other to be installed, but they are designed for simultaneous use. Both modules are written for Drupal 7.
 
 It is assumed that API-Key authentication will be used to restrict access to published data. If authentication is used, the Drupal Services API Key Authentication module must be installed and enabled. If access is to be left open, all further references to API keys may be ignored.
 
@@ -15,6 +15,11 @@ Install and enable the Agile Humanities DHCommons Module.
 Create a Drupal role called **rest user**, and give members of that role access to all permissions listed under Services.
 
 Create a user called **RestUser**.  This fictional user exists only for configuration purposes. Credentials are unimportant. Assign this new user the role of **rest user**.
+
+## Required Drupal 7 Modules
+- Services
+- Services Entity API
+- Services API Key Authentication (only if authentication required)
 
 ## Configure publishing
 
